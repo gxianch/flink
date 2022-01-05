@@ -21,7 +21,6 @@ package org.apache.flink.metrics.kafka.influxdb;
 import org.apache.flink.metrics.*;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** 已改造 Point改MyPoint */
@@ -56,15 +55,6 @@ public class MetricMapper {
                 .addField("p98", statistics.getQuantile(.98))
                 .addField("p99", statistics.getQuantile(.99))
                 .addField("p999", statistics.getQuantile(.999))
-                .build();
-    }
-
-    public static MyPoint map(Map.Entry<Meter, MeasurementInfo> entry, Instant timestamp) {
-        MeasurementInfo info = entry.getValue();
-        Meter meter = entry.getKey();
-        return builder(info, timestamp)
-                .addField("count", meter.getCount())
-                .addField("rate", meter.getRate())
                 .build();
     }
 

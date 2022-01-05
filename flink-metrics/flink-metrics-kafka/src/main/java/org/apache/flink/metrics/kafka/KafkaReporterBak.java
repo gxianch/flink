@@ -40,18 +40,16 @@ import java.util.*;
 
 /** {@link MetricReporter} that exports {@link Metric Metrics} via InfluxDB. */
 @InstantiateViaFactory(factoryClassName = "org.apache.flink.metrics.kafka.KafkaReporterFactory")
-public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements Scheduled {
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaReporter.class);
+public class KafkaReporterBak extends AbstractReporter<MeasurementInfo> implements Scheduled {
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaReporterBak.class);
 
-    public KafkaReporter() {
+    public KafkaReporterBak() {
         super(new MeasurementInfoProvider());
     }
 
     private KafkaProducer kafkaProducer;
     private String topic;
     private List<String> endsWithMetricList;
-    private static final String JOB_ID = "job_id";
-    private static final String JOB_NAME = "job_name";
 
     @Override
     public void open(MetricConfig metricConfig) {
@@ -89,40 +87,10 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
     private final ObjectMapper mapper = new ObjectMapper();
 
     private void tryReport() {
-
         Instant timestamp = Instant.now();
         try {
-            // 从带job的指标中获取job_id和job_name,赋值给不带的指标,配置的指标不带_job_也可以
-            String job_id = "";
-            String job_name = "";
-            List<MeasurementInfo> metriclist = new ArrayList<>();
-            metriclist.addAll(gauges.values());
-            metriclist.addAll(counters.values());
-            metriclist.addAll(histograms.values());
-            metriclist.addAll(meters.values());
-            for (MeasurementInfo info : metriclist) {
-                if (info.getName().startsWith("jobmanager_job_")
-                        || info.getName().startsWith("taskmanager_job_")) {
-                    job_id = info.getTags().getOrDefault(JOB_ID, "");
-                    job_name = info.getTags().getOrDefault(JOB_NAME, "");
-                    //                    LOG.info("job_id:{},job_name:{}", job_id, job_name);
-                    if (StringUtils.isBlank(job_id) || StringUtils.isBlank(job_name)) {
-                        LOG.error("do not get job_id or job name:{}", info);
-                    }
-                    break;
-                }
-            }
-            List<Map> list = new ArrayList<>();
 
-            /*         可以过滤以后再匹配，但是如果过滤指标不含job_id，则没有job_id
-            Map<Gauge<?>, MeasurementInfo> gaugesfilter =gauges.entrySet().stream()
-                .filter(map -> endsWithMetricList.stream()
-                        .anyMatch(
-                                endWith ->
-                                        map.getValue()
-                                                .getName()
-                                                .endsWith(endWith.trim())))
-                .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));*/
+            List<Map> list = new ArrayList<>();
             for (Map.Entry<Gauge<?>, MeasurementInfo> entry : gauges.entrySet()) {
                 boolean flag =
                         endsWithMetricList.stream()
@@ -134,9 +102,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                 if (flag) {
                     list.add(
                             getPointMap(
-                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey()),
-                                    job_id,
-                                    job_name));
+                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey())));
                 }
             }
             for (Map.Entry<Counter, MeasurementInfo> entry : counters.entrySet()) {
@@ -150,9 +116,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                 if (flag) {
                     list.add(
                             getPointMap(
-                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey()),
-                                    job_id,
-                                    job_name));
+                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey())));
                 }
             }
             for (Map.Entry<Histogram, MeasurementInfo> entry : histograms.entrySet()) {
@@ -166,9 +130,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                 if (flag) {
                     list.add(
                             getPointMap(
-                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey()),
-                                    job_id,
-                                    job_name));
+                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey())));
                 }
             }
             for (Map.Entry<Meter, MeasurementInfo> entry : meters.entrySet()) {
@@ -182,9 +144,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                 if (flag) {
                     list.add(
                             getPointMap(
-                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey()),
-                                    job_id,
-                                    job_name));
+                                    MetricMapper.map(entry.getValue(), timestamp, entry.getKey())));
                 }
             }
             if (list.size() > 0) {
@@ -204,15 +164,9 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
         }
     }
 
-    private Map<String, Object> getPointMap(MyPoint p, String job_id, String job_name) {
+    private Map<String, Object> getPointMap(MyPoint p) {
         Map<String, Object> pointmap = new HashMap<>();
         pointmap.put("name", p.getMeasurement());
-        if (!p.getTags().containsKey(JOB_ID)) {
-            p.getTags().put(JOB_ID, job_id);
-        }
-        if (!p.getTags().containsKey(JOB_NAME)) {
-            p.getTags().put(JOB_NAME, job_name);
-        }
         pointmap.put("tags", p.getTags());
         pointmap.put("time", p.getTime());
         pointmap.put("fields", p.getFields());

@@ -33,7 +33,7 @@ public final class MeasurementInfo {
         return name;
     }
 
-    Map<String, String> getTags() {
+    public Map<String, String> getTags() {
         return tags;
     }
 }
