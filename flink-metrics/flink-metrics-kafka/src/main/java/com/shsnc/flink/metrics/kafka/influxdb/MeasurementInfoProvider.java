@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.flink.metrics.kafka.influxdb;
+package com.shsnc.flink.metrics.kafka.influxdb;
 
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.metrics.CharacterFilter;

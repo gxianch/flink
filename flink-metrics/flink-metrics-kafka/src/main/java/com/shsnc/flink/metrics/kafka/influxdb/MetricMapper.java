@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.flink.metrics.kafka.influxdb;
+package com.shsnc.flink.metrics.kafka.influxdb;
 
 import org.apache.flink.metrics.*;
 
@@ -38,7 +38,8 @@ public class MetricMapper {
     }
 
     public static MyPoint map(MeasurementInfo info, Instant timestamp, Counter counter) {
-        return builder(info, timestamp).addField("count", counter.getCount()).build();
+        //        return builder(info, timestamp).addField("count", counter.getCount()).build();
+        return builder(info, timestamp).addField("value", counter.getCount()).build();
     }
 
     public static MyPoint map(MeasurementInfo info, Instant timestamp, Histogram histogram) {
@@ -55,13 +56,15 @@ public class MetricMapper {
                 .addField("p98", statistics.getQuantile(.98))
                 .addField("p99", statistics.getQuantile(.99))
                 .addField("p999", statistics.getQuantile(.999))
+                .addField("value", statistics.toString())
                 .build();
     }
 
     public static MyPoint map(MeasurementInfo info, Instant timestamp, Meter meter) {
         return builder(info, timestamp)
                 .addField("count", meter.getCount())
-                .addField("rate", meter.getRate())
+                //                .addField("rate", meter.getRate())
+                .addField("value", meter.getRate())
                 .build();
     }
 

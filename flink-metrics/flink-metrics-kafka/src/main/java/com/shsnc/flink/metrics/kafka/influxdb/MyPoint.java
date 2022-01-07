@@ -1,4 +1,4 @@
-package org.apache.flink.metrics.kafka.influxdb;
+package com.shsnc.flink.metrics.kafka.influxdb;
 
 //
 // Source code recreated from a .class file by IntelliJ IDEA
@@ -44,9 +44,8 @@ public class MyPoint {
         this.precision = TimeUnit.NANOSECONDS;
     }
 
-    public static org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder measurement(
-            String measurement) {
-        return new org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder(measurement);
+    public static MyPoint.Builder measurement(String measurement) {
+        return new MyPoint.Builder(measurement);
     }
 
     void setMeasurement(String measurement) {
@@ -85,8 +84,7 @@ public class MyPoint {
         if (this == o) {
             return true;
         } else if (o != null && this.getClass() == o.getClass()) {
-            org.apache.flink.metrics.kafka.influxdb.MyPoint point =
-                    (org.apache.flink.metrics.kafka.influxdb.MyPoint) o;
+            MyPoint point = (MyPoint) o;
             return Objects.equals(this.measurement, point.measurement)
                     && Objects.equals(this.tags, point.tags)
                     && Objects.equals(this.time, point.time)
@@ -261,8 +259,7 @@ public class MyPoint {
             this.measurement = measurement;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder tag(
-                String tagName, String value) {
+        public MyPoint.Builder tag(String tagName, String value) {
             Objects.requireNonNull(tagName, "tagName");
             Objects.requireNonNull(value, "value");
             if (!tagName.isEmpty() && !value.isEmpty()) {
@@ -272,8 +269,7 @@ public class MyPoint {
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder tag(
-                Map<String, String> tagsToAdd) {
+        public MyPoint.Builder tag(Map<String, String> tagsToAdd) {
             Iterator var2 = tagsToAdd.entrySet().iterator();
 
             while (var2.hasNext()) {
@@ -286,8 +282,7 @@ public class MyPoint {
 
         /** @deprecated */
         @Deprecated
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder field(
-                String field, Object value) {
+        public MyPoint.Builder field(String field, Object value) {
             if (value instanceof Number) {
                 if (value instanceof Byte) {
                     value = ((Byte) value).doubleValue();
@@ -306,45 +301,38 @@ public class MyPoint {
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder addField(
-                String field, boolean value) {
+        public MyPoint.Builder addField(String field, boolean value) {
             this.fields.put(field, value);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder addField(
-                String field, long value) {
+        public MyPoint.Builder addField(String field, long value) {
             this.fields.put(field, value);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder addField(
-                String field, double value) {
+        public MyPoint.Builder addField(String field, double value) {
             this.fields.put(field, value);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder addField(
-                String field, Number value) {
+        public MyPoint.Builder addField(String field, Number value) {
             this.fields.put(field, value);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder addField(
-                String field, String value) {
+        public MyPoint.Builder addField(String field, String value) {
             Objects.requireNonNull(value, "value");
             this.fields.put(field, value);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder fields(
-                Map<String, Object> fieldsToAdd) {
+        public MyPoint.Builder fields(Map<String, Object> fieldsToAdd) {
             this.fields.putAll(fieldsToAdd);
             return this;
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint.Builder time(
-                long timeToSet, TimeUnit precisionToSet) {
+        public MyPoint.Builder time(long timeToSet, TimeUnit precisionToSet) {
             Objects.requireNonNull(precisionToSet, "precisionToSet");
             this.time = timeToSet;
             this.precision = precisionToSet;
@@ -355,9 +343,8 @@ public class MyPoint {
             return !this.fields.isEmpty();
         }
 
-        public org.apache.flink.metrics.kafka.influxdb.MyPoint build() {
-            org.apache.flink.metrics.kafka.influxdb.MyPoint point =
-                    new org.apache.flink.metrics.kafka.influxdb.MyPoint();
+        public MyPoint build() {
+            MyPoint point = new MyPoint();
             point.setFields(this.fields);
             point.setMeasurement(this.measurement);
             if (this.time != null) {

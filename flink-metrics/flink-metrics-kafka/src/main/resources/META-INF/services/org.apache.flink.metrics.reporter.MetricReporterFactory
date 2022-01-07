@@ -13,4 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-org.apache.flink.metrics.kafka.KafkaReporterFactory
+com.shsnc.flink.metrics.kafka.KafkaReporterFactory

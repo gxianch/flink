@@ -1,4 +1,4 @@
-package org.apache.flink.metrics.kafka;
+package com.shsnc.flink.metrics.kafka;
 
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.metrics.*;

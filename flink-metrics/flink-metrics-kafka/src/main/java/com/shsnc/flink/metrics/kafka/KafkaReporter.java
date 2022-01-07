@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package org.apache.flink.metrics.kafka;
+package com.shsnc.flink.metrics.kafka;
 
 import org.apache.flink.metrics.*;
-import org.apache.flink.metrics.kafka.influxdb.*;
 import org.apache.flink.metrics.reporter.InstantiateViaFactory;
 import org.apache.flink.metrics.reporter.MetricReporter;
 import org.apache.flink.metrics.reporter.Scheduled;
@@ -27,6 +26,7 @@ import org.apache.flink.metrics.reporter.Scheduled;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.shsnc.flink.metrics.kafka.influxdb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -39,7 +39,7 @@ import java.util.*;
 /** 改造自InfluxdbReporter */
 
 /** {@link MetricReporter} that exports {@link Metric Metrics} via InfluxDB. */
-@InstantiateViaFactory(factoryClassName = "org.apache.flink.metrics.kafka.KafkaReporterFactory")
+@InstantiateViaFactory(factoryClassName = "com.shsnc.flink.metrics.kafka.KafkaReporterFactory")
 public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements Scheduled {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaReporter.class);
 
@@ -108,6 +108,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                     //                    LOG.info("job_id:{},job_name:{}", job_id, job_name);
                     if (StringUtils.isBlank(job_id) || StringUtils.isBlank(job_name)) {
                         LOG.error("do not get job_id or job name:{}", info);
+                        return; // TODO 获取不到job_id，不report到kafka？
                     }
                     break;
                 }

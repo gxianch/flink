@@ -1,4 +1,4 @@
-package org.apache.flink.metrics.kafka;
+package com.shsnc.flink.metrics.kafka;
 
 import org.apache.flink.metrics.reporter.InterceptInstantiationViaReflection;
 import org.apache.flink.metrics.reporter.MetricReporter;
@@ -8,7 +8,7 @@ import java.util.Properties;
 
 /** {@link MetricReporterFactory} for {@link KafkaReporter}. */
 @InterceptInstantiationViaReflection(
-        reporterClassName = "org.apache.flink.metrics.kafka.KafkaReporter")
+        reporterClassName = "com.shsnc.flink.metrics.kafka.KafkaReporter")
 public class KafkaReporterFactory implements MetricReporterFactory {
 
     @Override

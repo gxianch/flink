@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-package org.apache.flink.metrics.kafka;
+package com.shsnc.flink.metrics.kafka;
 
 import org.apache.flink.metrics.*;
-import org.apache.flink.metrics.kafka.influxdb.*;
 import org.apache.flink.metrics.reporter.InstantiateViaFactory;
 import org.apache.flink.metrics.reporter.MetricReporter;
 import org.apache.flink.metrics.reporter.Scheduled;
@@ -27,6 +26,7 @@ import org.apache.flink.metrics.reporter.Scheduled;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.shsnc.flink.metrics.kafka.influxdb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;

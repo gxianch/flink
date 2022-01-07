@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.flink.metrics.kafka.influxdb;
+package com.shsnc.flink.metrics.kafka.influxdb;
 
 import java.util.Map;
 
