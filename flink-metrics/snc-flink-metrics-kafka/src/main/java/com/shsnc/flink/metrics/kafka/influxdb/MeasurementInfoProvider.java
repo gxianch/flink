@@ -45,7 +45,9 @@ public class MeasurementInfoProvider implements MetricInfoProvider<MeasurementIn
 
     @Override
     public MeasurementInfo getMetricInfo(String metricName, MetricGroup group) {
-        return new MeasurementInfo(getScopedName(metricName, group), getTags(group));
+//        return new MeasurementInfo(getScopedName(metricName, group), getTags(group));
+        //指标名称不过滤
+        return new MeasurementInfo(group.getMetricIdentifier(metricName),getTags(group));
     }
 
     private static Map<String, String> getTags(MetricGroup group) {

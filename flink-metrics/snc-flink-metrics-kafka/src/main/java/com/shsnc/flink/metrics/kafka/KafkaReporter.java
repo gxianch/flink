@@ -131,7 +131,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                                         endWith ->
                                                 entry.getValue()
                                                         .getName()
-                                                        .endsWith(endWith.trim()));
+                                                        .contains(endWith.trim()));
                 if (flag) {
                     list.add(
                             getPointMap(
@@ -147,7 +147,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                                         endWith ->
                                                 entry.getValue()
                                                         .getName()
-                                                        .endsWith(endWith.trim()));
+                                                        .contains(endWith.trim()));
                 if (flag) {
                     list.add(
                             getPointMap(
@@ -163,7 +163,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                                         endWith ->
                                                 entry.getValue()
                                                         .getName()
-                                                        .endsWith(endWith.trim()));
+                                                        .contains(endWith.trim()));
                 if (flag) {
                     list.add(
                             getPointMap(
@@ -179,7 +179,7 @@ public class KafkaReporter extends AbstractReporter<MeasurementInfo> implements 
                                         endWith ->
                                                 entry.getValue()
                                                         .getName()
-                                                        .endsWith(endWith.trim()));
+                                                        .contains(endWith.trim()));
                 if (flag) {
                     list.add(
                             getPointMap(
