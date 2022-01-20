@@ -29,8 +29,13 @@ import org.apache.flink.table.connector.sink.DynamicTableSink;
 import org.apache.flink.table.connector.sink.SinkFunctionProvider;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.DataType;
+import org.apache.flink.table.types.logical.DistinctType;
+import org.apache.flink.table.types.logical.LogicalType;
+import org.apache.flink.table.types.logical.LogicalTypeRoot;
 import org.apache.flink.types.RowKind;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import static org.apache.flink.util.Preconditions.checkState;
@@ -44,6 +49,25 @@ public class JdbcDynamicTableSink implements DynamicTableSink {
     private final JdbcDmlOptions dmlOptions;
     private final DataType physicalRowDataType;
     private final String dialectName;
+
+    public static List<DataType> getFieldDataTypes(DataType dataType) {
+        final LogicalType type = dataType.getLogicalType();
+        if (type.getTypeRoot() == LogicalTypeRoot.DISTINCT_TYPE) {
+            return getFieldDataTypes(dataType.getChildren().get(0));
+        } else if (isCompositeType(type)) {
+            return dataType.getChildren();
+        }
+        return Collections.emptyList();
+    }
+
+    public static boolean isCompositeType(LogicalType logicalType) {
+        if (logicalType instanceof DistinctType) {
+            return isCompositeType(((DistinctType) logicalType).getSourceType());
+        }
+
+        LogicalTypeRoot typeRoot = logicalType.getTypeRoot();
+        return typeRoot == LogicalTypeRoot.STRUCTURED_TYPE || typeRoot == LogicalTypeRoot.ROW;
+    }
 
     public JdbcDynamicTableSink(
             JdbcConnectorOptions jdbcOptions,
@@ -84,8 +108,7 @@ public class JdbcDynamicTableSink implements DynamicTableSink {
         builder.setJdbcDmlOptions(dmlOptions);
         builder.setJdbcExecutionOptions(executionOptions);
         builder.setRowDataTypeInfo(rowDataTypeInformation);
-        builder.setFieldDataTypes(
-                DataType.getFieldDataTypes(physicalRowDataType).toArray(new DataType[0]));
+        builder.setFieldDataTypes(getFieldDataTypes(physicalRowDataType).toArray(new DataType[0]));
         return SinkFunctionProvider.of(
                 new GenericJdbcSinkFunction<>(builder.build()), jdbcOptions.getParallelism());
     }

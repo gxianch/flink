@@ -24,8 +24,10 @@ import org.apache.flink.connector.jdbc.internal.options.JdbcConnectorOptions;
 import org.apache.flink.connector.jdbc.internal.options.JdbcLookupOptions;
 import org.apache.flink.connector.jdbc.internal.options.JdbcReadOptions;
 import org.apache.flink.connector.jdbc.split.JdbcNumericBetweenParametersProvider;
+import org.apache.flink.table.catalog.Column;
+import org.apache.flink.table.catalog.ResolvedSchema;
+import org.apache.flink.table.catalog.UniqueConstraint;
 import org.apache.flink.table.connector.ChangelogMode;
-import org.apache.flink.table.connector.Projection;
 import org.apache.flink.table.connector.source.DynamicTableSource;
 import org.apache.flink.table.connector.source.InputFormatProvider;
 import org.apache.flink.table.connector.source.LookupTableSource;
@@ -34,10 +36,17 @@ import org.apache.flink.table.connector.source.TableFunctionProvider;
 import org.apache.flink.table.connector.source.abilities.SupportsLimitPushDown;
 import org.apache.flink.table.connector.source.abilities.SupportsProjectionPushDown;
 import org.apache.flink.table.types.DataType;
+import org.apache.flink.table.types.logical.DistinctType;
+import org.apache.flink.table.types.logical.LogicalType;
+import org.apache.flink.table.types.logical.LogicalTypeRoot;
 import org.apache.flink.table.types.logical.RowType;
+import org.apache.flink.table.types.logical.utils.LogicalTypeChecks;
 import org.apache.flink.util.Preconditions;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /** A {@link DynamicTableSource} for JDBC. */
 @Internal
@@ -53,6 +62,47 @@ public class JdbcDynamicTableSource
     private DataType physicalRowDataType;
     private final String dialectName;
     private long limit = -1;
+
+    public static List<String> getFieldNames(DataType dataType) {
+        final LogicalType type = dataType.getLogicalType();
+        if (type.getTypeRoot() == LogicalTypeRoot.DISTINCT_TYPE) {
+            return getFieldNames(dataType.getChildren().get(0));
+        } else if (isCompositeType(type)) {
+            return LogicalTypeChecks.getFieldNames(type);
+        }
+        return Collections.emptyList();
+    }
+
+    public static List<DataType> getFieldDataTypes(DataType dataType) {
+        final LogicalType type = dataType.getLogicalType();
+        if (type.getTypeRoot() == LogicalTypeRoot.DISTINCT_TYPE) {
+            return getFieldDataTypes(dataType.getChildren().get(0));
+        } else if (isCompositeType(type)) {
+            return dataType.getChildren();
+        }
+        return Collections.emptyList();
+    }
+
+    public static boolean isCompositeType(LogicalType logicalType) {
+        if (logicalType instanceof DistinctType) {
+            return isCompositeType(((DistinctType) logicalType).getSourceType());
+        }
+
+        LogicalTypeRoot typeRoot = logicalType.getTypeRoot();
+        return typeRoot == LogicalTypeRoot.STRUCTURED_TYPE || typeRoot == LogicalTypeRoot.ROW;
+    }
+
+    public int[] getPrimaryKeyIndexes(ResolvedSchema resolvedSchema) {
+        final List<String> columns =
+                resolvedSchema.getColumns().stream()
+                        .map(Column::getName)
+                        .collect(Collectors.toList());
+        return resolvedSchema
+                .getPrimaryKey()
+                .map(UniqueConstraint::getColumns)
+                .map(pkColumns -> pkColumns.stream().mapToInt(columns::indexOf).toArray())
+                .orElseGet(() -> new int[] {});
+    }
 
     public JdbcDynamicTableSource(
             JdbcConnectorOptions options,
@@ -74,7 +124,7 @@ public class JdbcDynamicTableSource
             int[] innerKeyArr = context.getKeys()[i];
             Preconditions.checkArgument(
                     innerKeyArr.length == 1, "JDBC only support non-nested look up keys");
-            keyNames[i] = DataType.getFieldNames(physicalRowDataType).get(innerKeyArr[0]);
+            keyNames[i] = getFieldNames(physicalRowDataType).get(innerKeyArr[0]);
         }
         final RowType rowType = (RowType) physicalRowDataType.getLogicalType();
 
@@ -82,8 +132,8 @@ public class JdbcDynamicTableSource
                 new JdbcRowDataLookupFunction(
                         options,
                         lookupOptions,
-                        DataType.getFieldNames(physicalRowDataType).toArray(new String[0]),
-                        DataType.getFieldDataTypes(physicalRowDataType).toArray(new DataType[0]),
+                        getFieldNames(physicalRowDataType).toArray(new String[0]),
+                        getFieldDataTypes(physicalRowDataType).toArray(new DataType[0]),
                         keyNames,
                         rowType));
     }
@@ -105,7 +155,7 @@ public class JdbcDynamicTableSource
         String query =
                 dialect.getSelectFromStatement(
                         options.getTableName(),
-                        DataType.getFieldNames(physicalRowDataType).toArray(new String[0]),
+                        getFieldNames(physicalRowDataType).toArray(new String[0]),
                         new String[0]);
         if (readOptions.getPartitionColumnName().isPresent()) {
             long lowerBound = readOptions.getPartitionLowerBound().get();
@@ -142,9 +192,16 @@ public class JdbcDynamicTableSource
         return false;
     }
 
+    /*  @Override
+        public void applyProjection(int[][] projectedFields, DataType producedDataType) {
+            this.physicalRowDataType =null;
+    //        this.physicalRowDataType = Projection.of(projectedFields).project(physicalRowDataType);
+        }*/
     @Override
-    public void applyProjection(int[][] projectedFields, DataType producedDataType) {
-        this.physicalRowDataType = Projection.of(projectedFields).project(physicalRowDataType);
+    public void applyProjection(int[][] projectedFields) {
+        // TODO
+        //       this.physicalRowDataType =
+        // Projection.of(projectedFields).project(physicalRowDataType);
     }
 
     @Override
