@@ -17,7 +17,8 @@
  */
 
 package org.apache.flink.connector.jdbc.table;
-
+// import org.apache.flink.shaded.guava30.com.google.common.cache.Cache;
+// import org.apache.flink.shaded.guava30.com.google.common.cache.CacheBuilder;
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.connector.jdbc.converter.JdbcRowConverter;

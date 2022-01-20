@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.flink.connector.jdbc.internal;
+package org.apache.flink.connector.jdbc.snc;
 
 import org.apache.flink.annotation.Public;
 

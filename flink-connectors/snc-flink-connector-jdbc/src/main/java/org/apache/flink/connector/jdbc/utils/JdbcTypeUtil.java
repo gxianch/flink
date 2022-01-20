@@ -17,7 +17,8 @@
  */
 
 package org.apache.flink.connector.jdbc.utils;
-
+/*1.15版本import
+import org.apache.flink.shaded.guava30.com.google.common.collect.ImmutableMap;*/
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.api.common.typeinfo.LocalTimeTypeInfo;
 import org.apache.flink.api.common.typeinfo.PrimitiveArrayTypeInfo;

@@ -80,6 +80,7 @@ public class PostgresRowConverter extends AbstractJdbcRowConverter {
     private JdbcDeserializationConverter createPostgresArrayConverter(ArrayType arrayType) {
         // PG's bytea[] is wrapped in PGobject, rather than primitive byte arrays
         //        if (arrayType.getElementType().is(LogicalTypeFamily.BINARY_STRING)) {
+        //  1.15 代码改造为以下
         if (arrayType
                 .getElementType()
                 .getTypeRoot()

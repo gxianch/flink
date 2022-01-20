@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.flink.connector.jdbc.internal;
+package org.apache.flink.connector.jdbc.snc;
 
 /** Indicates that user tried to exit JVM. */
 public class UserSystemExitException extends SecurityException {

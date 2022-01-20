@@ -17,6 +17,8 @@
  */
 
 package org.apache.flink.connector.jdbc.internal;
+/*import org.apache.flink.util.concurrent.ExecutorThreadFactory;
+import org.apache.flink.util.function.SerializableFunction;*/
 
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.annotation.VisibleForTesting;
@@ -35,6 +37,8 @@ import org.apache.flink.connector.jdbc.internal.connection.SimpleJdbcConnectionP
 import org.apache.flink.connector.jdbc.internal.executor.JdbcBatchStatementExecutor;
 import org.apache.flink.connector.jdbc.internal.options.JdbcConnectorOptions;
 import org.apache.flink.connector.jdbc.internal.options.JdbcDmlOptions;
+import org.apache.flink.connector.jdbc.snc.ExecutorThreadFactory;
+import org.apache.flink.connector.jdbc.snc.SerializableFunction;
 import org.apache.flink.connector.jdbc.statement.FieldNamedPreparedStatementImpl;
 import org.apache.flink.connector.jdbc.utils.JdbcUtils;
 import org.apache.flink.types.Row;
