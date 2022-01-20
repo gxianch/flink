@@ -5,14 +5,12 @@
 1.引入flink 1.15上的类和方法存放在 org.apache.flink.connector.jdbc.snc包下
 2.改造的地方原代码保留已注释，用于后续问题排查
 
-### 实施
+### 实施和测试
 
-```
 oracle包ojdbc8-12.2.0.1.jar(mysql-connector-java-8.0.27.jar),和本项目打包的snc-flink-connector-jdbc-1.13-SNAPSHOT.jar同时复制到lib目录下
-```
-
-### 测试
-
+测试 sql-shell 
+./bin/start-cluster.sh
+./bin/sql-client.sh
 ```sql
 ### oracle
 CREATE TABLE MyUserTableoracle (
